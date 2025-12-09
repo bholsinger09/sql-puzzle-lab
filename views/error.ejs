@@ -1,9 +1,10 @@
 <div class="container">
   <div class="error-container">
-    <h1>😕 <%= message %></h1>
+    <h1>😕 <%= message %>
+    </h1>
     <% if (error && error.stack) { %>
       <pre class="error-stack"><%= error.stack %></pre>
-    <% } %>
-    <a href="/" class="btn-primary">Go Home</a>
+      <% } %>
+        <a href="/" class="btn-primary">Go Home</a>
   </div>
 </div>

@@ -2,65 +2,54 @@
   <div class="login-container">
     <h1>Login to SQL Puzzle Lab</h1>
     <p class="subtitle">Enter your username to start practicing SQL</p>
-    
+
     <form id="loginForm" class="login-form">
       <div class="form-group">
         <label for="username">Username</label>
-        <input 
-          type="text" 
-          id="username" 
-          name="username" 
-          required 
-          placeholder="Enter your username"
-          autocomplete="username"
-        >
+        <input type="text" id="username" name="username" required placeholder="Enter your username"
+          autocomplete="username">
       </div>
-      
+
       <div class="form-group">
         <label for="classroom">Classroom (Optional)</label>
-        <input 
-          type="text" 
-          id="classroom" 
-          name="classroom" 
-          placeholder="e.g., CS101, DataScience2024"
-          autocomplete="organization"
-        >
+        <input type="text" id="classroom" name="classroom" placeholder="e.g., CS101, DataScience2024"
+          autocomplete="organization">
         <small>Join a classroom to compete on leaderboards</small>
       </div>
 
       <div id="errorMessage" class="error-message" style="display: none;"></div>
-      
+
       <button type="submit" class="btn-primary btn-large">Login</button>
     </form>
   </div>
 </div>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  const username = document.getElementById('username').value;
-  const classroom = document.getElementById('classroom').value;
-  const errorMessage = document.getElementById('errorMessage');
-  
-  try {
-    const response = await fetch('/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, classroom })
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      window.location.href = data.redirect;
-    } else {
-      errorMessage.textContent = data.error || 'Login failed';
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const classroom = document.getElementById('classroom').value;
+    const errorMessage = document.getElementById('errorMessage');
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, classroom })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = data.redirect;
+      } else {
+        errorMessage.textContent = data.error || 'Login failed';
+        errorMessage.style.display = 'block';
+      }
+    } catch (error) {
+      errorMessage.textContent = 'An error occurred. Please try again.';
       errorMessage.style.display = 'block';
     }
-  } catch (error) {
-    errorMessage.textContent = 'An error occurred. Please try again.';
-    errorMessage.style.display = 'block';
-  }
-});
+  });
 </script>
