@@ -1,3 +1,5 @@
+<%- include('partials/header', { title, user }) %>
+
 <div class="container">
   <h1>🏆 Leaderboard</h1>
   <% if (classroom) { %>
@@ -69,3 +71,5 @@
                 </div>
                 <% } %>
 </div>
+
+<%- include('partials/footer') %>

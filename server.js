@@ -10,14 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 // Security middleware
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-        },
-    },
+    contentSecurityPolicy: false, // Disable for local development
+    hsts: false, // Disable HSTS for local development
 }));
 
 // Compression middleware
@@ -44,9 +38,15 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Static files
 app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1d',
-    etag: true
+    maxAge: 0, // Disable caching for development
+    etag: false
 }));
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
 
 // Import routes
 const indexRoutes = require('./routes/index');

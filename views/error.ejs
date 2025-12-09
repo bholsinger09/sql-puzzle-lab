@@ -1,3 +1,5 @@
+<%- include('partials/header', { title: 'Error', user: null }) %>
+
 <div class="container">
   <div class="error-container">
     <h1>😕 <%= message %>
@@ -8,3 +10,5 @@
         <a href="/" class="btn-primary">Go Home</a>
   </div>
 </div>
+
+<%- include('partials/footer') %>
