@@ -1,0 +1,67 @@
+<div class="container">
+  <h1>🏆 Leaderboard</h1>
+  <% if (classroom) { %>
+    <p class="subtitle">Classroom: <%= classroom %></p>
+    <a href="/leaderboard" class="btn-secondary">View Global Leaderboard</a>
+  <% } else { %>
+    <p class="subtitle">Top SQL puzzle solvers</p>
+  <% } %>
+
+  <% if (leaderboard && leaderboard.length > 0) { %>
+    <div class="leaderboard-table-container">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>User</th>
+            <th>Classroom</th>
+            <th>Score</th>
+            <th>Challenges Completed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% leaderboard.forEach((entry, index) => { %>
+            <tr class="<%= user && entry.id === user.id ? 'current-user' : '' %>">
+              <td>
+                <span class="rank-badge rank-<%= index + 1 %>">
+                  <%= index + 1 <= 3 ? ['🥇', '🥈', '🥉'][index] : `#${index + 1}` %>
+                </span>
+              </td>
+              <td class="username">
+                <%= entry.username %>
+                <% if (user && entry.id === user.id) { %>
+                  <span class="you-badge">You</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (entry.classroom) { %>
+                  <a href="/leaderboard/classroom/<%= entry.classroom %>" class="classroom-link">
+                    <%= entry.classroom %>
+                  </a>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </td>
+              <td class="score">⭐ <%= entry.total_score %></td>
+              <td class="challenges"><%= entry.challenges_completed %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <p>No entries yet. Be the first to complete a challenge!</p>
+      <a href="/challenges" class="btn-primary">Start a Challenge</a>
+    </div>
+  <% } %>
+
+  <% if (user && user.classroom && !classroom) { %>
+    <div class="classroom-cta">
+      <p>Want to see your classroom ranking?</p>
+      <a href="/leaderboard/classroom/<%= user.classroom %>" class="btn-primary">
+        View <%= user.classroom %> Leaderboard
+      </a>
+    </div>
+  <% } %>
+</div>

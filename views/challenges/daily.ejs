@@ -1,0 +1,180 @@
+<div class="container">
+  <div class="daily-challenge-header">
+    <h1>📅 Daily Challenge</h1>
+    <p class="subtitle">Complete today's puzzle to earn extra points!</p>
+    <div class="date-badge"><%= new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></div>
+  </div>
+
+  <div class="challenge-content">
+    <div class="challenge-description">
+      <h2><%= challenge.title %></h2>
+      <div class="challenge-meta">
+        <span class="badge <%= challenge.difficulty %>"><%= challenge.difficulty %></span>
+        <span class="dataset-badge">📊 Dataset: <%= challenge.dataset %></span>
+        <% if (completed) { %>
+          <span class="completed-badge">✅ Completed Today!</span>
+        <% } %>
+      </div>
+      <p><%= challenge.description %></p>
+    </div>
+
+    <div class="sql-editor-container">
+      <div class="editor-header">
+        <h3>SQL Editor</h3>
+        <div class="editor-actions">
+          <button id="hintBtn" class="btn-secondary">💡 Get Hint</button>
+          <button id="datasetBtn" class="btn-secondary">📊 View Dataset</button>
+        </div>
+      </div>
+      
+      <textarea 
+        id="sqlEditor" 
+        class="sql-editor" 
+        placeholder="-- Write your SQL query here"
+      ></textarea>
+      
+      <button id="submitBtn" class="btn-primary btn-large">Run Query</button>
+    </div>
+
+    <div id="hintBox" class="hint-box" style="display: none;">
+      <h4>💡 Hint</h4>
+      <p id="hintText"></p>
+    </div>
+
+    <div id="resultBox" class="result-box" style="display: none;">
+      <h3 id="resultTitle">Results</h3>
+      <p id="resultMessage"></p>
+      <div id="resultTable"></div>
+    </div>
+
+    <div id="datasetModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Dataset: <%= challenge.dataset %></h2>
+        <div id="datasetContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const challengeId = <%= challenge.id %>;
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const query = document.getElementById('sqlEditor').value;
+  const resultBox = document.getElementById('resultBox');
+  const resultTitle = document.getElementById('resultTitle');
+  const resultMessage = document.getElementById('resultMessage');
+  const resultTable = document.getElementById('resultTable');
+  
+  if (!query.trim()) {
+    alert('Please enter a SQL query');
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId, query })
+    });
+    
+    const data = await response.json();
+    
+    resultBox.style.display = 'block';
+    resultTitle.textContent = data.isCorrect ? '✅ Correct!' : '❌ Incorrect';
+    resultTitle.className = data.isCorrect ? 'success' : 'error';
+    resultMessage.textContent = data.message;
+    
+    if (data.pointsEarned) {
+      resultMessage.textContent += ` You earned ${data.pointsEarned} points! 🎉`;
+    }
+    
+    if (data.results && data.results.length > 0) {
+      const table = createResultTable(data.results);
+      resultTable.innerHTML = table;
+    } else {
+      resultTable.innerHTML = '<p>No rows returned</p>';
+    }
+    
+    if (data.isCorrect) {
+      setTimeout(() => window.location.href = '/challenges', 2000);
+    }
+  } catch (error) {
+    resultBox.style.display = 'block';
+    resultTitle.textContent = '❌ Error';
+    resultTitle.className = 'error';
+    resultMessage.textContent = 'An error occurred while validating your query';
+  }
+});
+
+document.getElementById('hintBtn').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/api/hint', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ challengeId })
+    });
+    
+    const data = await response.json();
+    const hintBox = document.getElementById('hintBox');
+    const hintText = document.getElementById('hintText');
+    
+    hintText.textContent = data.hint;
+    hintBox.style.display = 'block';
+  } catch (error) {
+    alert('Error getting hint');
+  }
+});
+
+document.getElementById('datasetBtn').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/api/dataset/<%= challenge.dataset %>');
+    const data = await response.json();
+    
+    const modal = document.getElementById('datasetModal');
+    const content = document.getElementById('datasetContent');
+    
+    let html = '<h3>Table Structure</h3><table class="schema-table"><thead><tr><th>Column</th><th>Type</th></tr></thead><tbody>';
+    data.schema.forEach(col => {
+      html += `<tr><td>${col.name}</td><td>${col.type}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    
+    html += '<h3>Sample Data</h3>';
+    html += createResultTable(data.sampleData);
+    
+    content.innerHTML = html;
+    modal.style.display = 'block';
+  } catch (error) {
+    alert('Error loading dataset');
+  }
+});
+
+document.querySelector('.close').addEventListener('click', () => {
+  document.getElementById('datasetModal').style.display = 'none';
+});
+
+function createResultTable(data) {
+  if (!data || data.length === 0) return '<p>No data</p>';
+  
+  const columns = Object.keys(data[0]);
+  let html = '<table class="result-table"><thead><tr>';
+  
+  columns.forEach(col => {
+    html += `<th>${col}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  
+  data.forEach(row => {
+    html += '<tr>';
+    columns.forEach(col => {
+      html += `<td>${row[col] !== null ? row[col] : 'NULL'}</td>`;
+    });
+    html += '</tr>';
+  });
+  
+  html += '</tbody></table>';
+  return html;
+}
+</script>

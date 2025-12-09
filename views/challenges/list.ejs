@@ -1,0 +1,49 @@
+<div class="container">
+  <h1>SQL Challenges</h1>
+  <p class="subtitle">Choose a challenge and test your SQL skills</p>
+
+  <div class="difficulty-filter">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="easy">Easy</button>
+    <button class="filter-btn" data-filter="medium">Medium</button>
+    <button class="filter-btn" data-filter="hard">Hard</button>
+  </div>
+
+  <div class="challenges-list">
+    <% challenges.forEach(challenge => { %>
+      <div class="challenge-item" data-difficulty="<%= challenge.difficulty %>">
+        <div class="challenge-header">
+          <h3><%= challenge.title %></h3>
+          <span class="badge <%= challenge.difficulty %>"><%= challenge.difficulty %></span>
+        </div>
+        <p><%= challenge.description %></p>
+        <div class="challenge-meta">
+          <span class="dataset-badge">📊 <%= challenge.dataset %></span>
+        </div>
+        <a href="/challenges/<%= challenge.id %>" class="btn-primary">Start Challenge</a>
+      </div>
+    <% }); %>
+  </div>
+</div>
+
+<script>
+// Filter challenges by difficulty
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    // Filter challenges
+    document.querySelectorAll('.challenge-item').forEach(item => {
+      if (filter === 'all' || item.dataset.difficulty === filter) {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+});
+</script>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn SQL through daily challenges and interactive puzzles">
+    <meta name="theme-color" content="#4F46E5">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.svg">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+</head>
+
+<body>
+    <%- include('partials/navbar', { user }) %>
+
+        <main>
+            <div class="hero">
+                <div class="container">
+                    <h1>🧩 Welcome to SQL Puzzle Lab</h1>
+                    <p class="hero-subtitle">Master SQL through daily challenges and interactive puzzles</p>
+                    <div class="hero-buttons">
+                        <% if (user) { %>
+                            <a href="/challenges/daily" class="btn-primary btn-large">Today's Challenge</a>
+                            <a href="/challenges" class="btn-secondary btn-large">View All Challenges</a>
+                            <% } else { %>
+                                <a href="/login" class="btn-primary btn-large">Get Started</a>
+                                <a href="/about" class="btn-secondary btn-large">Learn More</a>
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <section class="features">
+                    <h2>Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📅</div>
+                            <h3>Daily Challenges</h3>
+                            <p>New SQL puzzle every day to keep your skills sharp</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3>Real Datasets</h3>
+                            <p>Practice with movies, coffee shops, HR, and school data</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h3>Instant Validation</h3>
+                            <p>Get immediate feedback on your SQL queries</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💡</div>
+                            <h3>Smart Hints</h3>
+                            <p>Progressive hints and step-by-step corrections</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🏆</div>
+                            <h3>Leaderboards</h3>
+                            <p>Compete with classmates and track progress</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📱</div>
+                            <h3>Works Offline</h3>
+                            <p>Progressive Web App - practice anywhere</p>
+                        </div>
+                    </div>
+                </section>
+
+                <% if (challenges && challenges.length> 0) { %>
+                    <section class="recent-challenges">
+                        <h2>Featured Challenges</h2>
+                        <div class="challenges-grid">
+                            <% challenges.forEach(challenge=> { %>
+                                <div class="challenge-card">
+                                    <div class="challenge-difficulty <%= challenge.difficulty %>">
+                                        <%= challenge.difficulty %>
+                                    </div>
+                                    <h3>
+                                        <%= challenge.title %>
+                                    </h3>
+                                    <a href="/challenges/<%= challenge.id %>" class="btn-secondary">Start Challenge</a>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <div class="text-center" style="margin-top: 2rem;">
+                            <a href="/challenges" class="btn-primary">View All Challenges →</a>
+                        </div>
+                    </section>
+                    <% } %>
+            </div>
+        </main>
+
+        <%- include('partials/footer') %>
+            <script src="/js/app.js"></script>
+</body>
+
+</html>
