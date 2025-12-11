@@ -24,11 +24,13 @@ app.use(express.urlencoded({ extended: true }));
 // Session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET || 'sql-puzzle-lab-secret',
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: 'lax'
     }
 }));
 
