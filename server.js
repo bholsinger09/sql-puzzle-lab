@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 const compression = require('compression');
 const helmet = require('helmet');
 const path = require('path');
@@ -23,8 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session middleware
 app.use(session({
+    store: new SQLiteStore({
+        db: 'sessions.db',
+        dir: './database'
+    }),
     secret: process.env.SESSION_SECRET || 'sql-puzzle-lab-secret',
-    resave: true,
+    resave: false,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production',
