@@ -92,7 +92,6 @@ app.use((req, res) => {
 });
 
 // Initialize database before starting server
-const fs = require('fs');
 const { execSync } = require('child_process');
 const dbPath = path.join(__dirname, 'database', 'sql_puzzle_lab.db');
 
