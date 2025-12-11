@@ -44,6 +44,8 @@ router.get('/login', (req, res) => {
 // Login handler
 router.post('/login', async (req, res) => {
     const { username, classroom } = req.body;
+    
+    console.log('Login attempt:', { username, classroom });
 
     if (!username) {
         return res.status(400).json({ error: 'Username is required' });
@@ -56,19 +58,23 @@ router.post('/login', async (req, res) => {
         let user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
 
         if (!user) {
+            console.log('Creating new user:', username);
             // Create new user
             const result = await db.run(
                 'INSERT INTO users (username, password_hash, classroom) VALUES (?, ?, ?)',
                 [username, 'demo', classroom || null]
             );
             user = { id: result.id, username, classroom: classroom || null, total_score: 0, challenges_completed: 0 };
+        } else {
+            console.log('Existing user found:', user.username);
         }
 
         req.session.user = user;
+        console.log('Session set, redirecting to /challenges');
         res.json({ success: true, redirect: '/challenges' });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Login failed' });
+        res.status(500).json({ error: 'Login failed: ' + error.message });
     }
 });
 
