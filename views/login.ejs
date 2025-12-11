@@ -34,6 +34,8 @@
     const classroom = document.getElementById('classroom').value;
     const errorMessage = document.getElementById('errorMessage');
 
+    console.log('Submitting login:', { username, classroom });
+
     try {
       const response = await fetch('/login', {
         method: 'POST',
@@ -41,15 +43,19 @@
         body: JSON.stringify({ username, classroom })
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (data.success) {
+        console.log('Redirecting to:', data.redirect);
         window.location.href = data.redirect;
       } else {
         errorMessage.textContent = data.error || 'Login failed';
         errorMessage.style.display = 'block';
       }
     } catch (error) {
+      console.error('Login error:', error);
       errorMessage.textContent = 'An error occurred. Please try again.';
       errorMessage.style.display = 'block';
     }
