@@ -5,6 +5,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const compression = require('compression');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,11 +23,17 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure database directory exists
+const dbDir = path.join(__dirname, 'database');
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
+
 // Session middleware
 app.use(session({
     store: new SQLiteStore({
         db: 'sessions.db',
-        dir: './database'
+        dir: dbDir
     }),
     secret: process.env.SESSION_SECRET || 'sql-puzzle-lab-secret',
     resave: false,
