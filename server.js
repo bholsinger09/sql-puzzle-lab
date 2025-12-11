@@ -77,27 +77,28 @@ app.use((req, res) => {
     });
 });
 
+// Initialize database before starting server
+const fs = require('fs');
+const { execSync } = require('child_process');
+const dbPath = path.join(__dirname, 'database', 'sql_puzzle_lab.db');
+
+if (!fs.existsSync(dbPath)) {
+    console.log('📁 Database not found, initializing...');
+    try {
+        execSync('node scripts/initDatabase.js', { stdio: 'inherit' });
+        console.log('✅ Database initialized successfully');
+    } catch (error) {
+        console.error('❌ Database initialization failed:', error);
+        process.exit(1);
+    }
+} else {
+    console.log('✅ Database found at', dbPath);
+}
+
 // Start server
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
     console.log(`🚀 SQL Puzzle Lab running on http://localhost:${PORT}`);
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-    
-    // Initialize database on startup
-    const fs = require('fs');
-    const dbPath = path.join(__dirname, 'database', 'sql_puzzle_lab.db');
-    
-    if (!fs.existsSync(dbPath)) {
-        console.log('📁 Database not found, initializing...');
-        const { execSync } = require('child_process');
-        try {
-            execSync('node scripts/initDatabase.js', { stdio: 'inherit' });
-            console.log('✅ Database initialized successfully');
-        } catch (error) {
-            console.error('❌ Database initialization failed:', error);
-        }
-    } else {
-        console.log('✅ Database found');
-    }
 });
 
 module.exports = app;
